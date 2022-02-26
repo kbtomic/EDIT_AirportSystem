@@ -1,0 +1,69 @@
+﻿@page "/CheckInPassengerList/{FlightId}"
+@inject PassengerService _passengerService;
+@inject NavigationManager _navigationManager;
+
+
+<h3>Passengers</h3>
+@if (Passengers == null)
+{
+<div>Loading...</div> }
+else
+{
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Gender</th>
+            <th>Seat Number</th>
+            <th>Luggage weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var passenger in Passengers)
+        {
+            if (passenger.FlightId == int.Parse(FlightId) && passenger.IsChecked == true)
+            {
+<tr>
+    <td>@passenger.FirstName</td>
+    <td>@passenger.LastName</td>
+    <td>@passenger.Gender</td>
+    <td>@passenger.SeatNumber@passenger.SeatPosition</td>
+    <td>@passenger.LuggageWeight kg</td>
+
+</tr>}
+                }
+
+    </tbody>
+</table>
+                <span class="btn btn-secondary">Total luggage weight: @CalculateWeight() kg</span>}
+
+@code { private List<Passenger> Passengers;
+    public ConfirmationDialog DeleteConfirmationDialog { get; set; }
+    public int SelectedPassengerId { get; set; }
+
+    [Parameter]
+    public string FlightId { get; set; }
+
+    public Flight Flight { get; set; }
+
+    [Parameter]
+    public int WeightSum { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Passengers = await _passengerService.GetPassengers();
+    }
+    private int CalculateWeight()
+    {
+
+        foreach (var passenger in Passengers)
+        {
+            if (passenger.FlightId == int.Parse(FlightId) && passenger.IsChecked == true)
+            {
+                WeightSum = WeightSum + (int)passenger.LuggageWeight;
+            }
+        }
+        return WeightSum;
+    }}
+

@@ -1,0 +1,119 @@
+﻿@page "/CheckInPassenger/{PassengerId}"
+@using System.Text;
+@inject PassengerService _passengerService;
+@inject NavigationManager _navigationManager;
+
+<h3>Check In Passenger</h3>
+
+@if (Passenger == null)
+{
+<p>Loading...</p> }
+else
+{
+<EditForm Model="@Passenger" OnValidSubmit="@UpdatePassengerCheckInAndSeat">
+    <label for="nameInDocument">Name in document</label>
+    <InputText id="nameInDocument" @bind-Value="@Passenger.NameInDocument" class="form-control"></InputText>
+
+    <label for="typeOfDocument">Type of document</label>
+    <InputText id="typeOfDocument" @bind-Value="@Passenger.TypeOfDocument" class="form-control"></InputText>
+
+    <label for="documentNumber">Document Number</label>
+    <InputNumber id="documentNumber" @bind-Value="@Passenger.NumberOfDocument" class="form-control"></InputNumber>
+
+    <label for="expiryDate">Date of expiration</label>
+    <InputDate id="expiryDate" @bind-Value="@Passenger.ExpiryDate" class="form-control"></InputDate>
+
+    <label for="seatNumber">Seat Number</label>
+    <InputNumber id="seatNumber" @bind-Value="@Passenger.SeatNumber" class="form-control"></InputNumber>
+
+    <label for="seatPosition">Seat Position</label>
+    <InputText id="seatPosition" @bind-Value="@Passenger.SeatPosition" class="form-control"></InputText>
+
+    <label for="isChecked">Check in</label>
+    @if (Passenger.IsChecked == false)
+    {<InputCheckbox id="isChecked" @bind-Value="@IsChecked" class="form-control"></InputCheckbox>}
+    <button type="submit" class="btn btn-success">
+        <span class="oi oi-pencil"></span>
+        Submit
+    </button>
+    <button type="button" class="btn btn-secondary" @onclick="Close">
+        <span class="oi oi-media-skip-backward"></span>
+        Close
+    </button>
+</EditForm>}
+
+<NotificationDialog @ref="NotificationDialog" Description="@ConcatenatedValidationErrors"></NotificationDialog>
+
+@code { [Parameter]
+    public string PassengerId { get; set; }
+
+    public Passenger Passenger { get; set; }
+    public bool IsChecked { get; set; }
+
+    public NotificationDialog NotificationDialog { get; set; }
+    public List<ValidationError> ValidationErrors { get; set; }
+    public String ConcatenatedValidationErrors { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Passenger = await _passengerService.GetPassengerAsync(int.Parse(PassengerId));
+    }
+
+    private async Task UpdatePassengerCheckInAndSeat()
+    {
+        ValidationErrors = ValidatePassenger();
+        if (ValidationErrors.Any())
+        {
+            ConcatenatedValidationErrors = GetConcatenatedValidationErrors(ValidationErrors);
+            NotificationDialog.Show();
+        }
+        else
+        {
+            Passenger.IsChecked = IsChecked;
+            if (Passenger.IsChecked == true)
+            { await _passengerService.UpdatePassengerCheckInAndSeat(Passenger); }
+            Close();
+        }
+    }
+
+    private void Close()
+    {
+        _navigationManager.NavigateTo("/");
+    }
+
+    private List<ValidationError> ValidatePassenger()
+    {
+        var validationErrors = new List<ValidationError>();
+        if (String.IsNullOrWhiteSpace(Passenger.NameInDocument))
+            validationErrors.Add(new ValidationError { Description = "Please insert passenger's name in document!" });
+        if (Passenger.TypeOfDocument != "Passport" && Passenger.TypeOfDocument != "ID card")
+            validationErrors.Add(new ValidationError { Description = "Please insert passenger's type of document - possible are passport od ID card!" });
+        if (Passenger.NumberOfDocument == null)
+            validationErrors.Add(new ValidationError { Description = "Please insert passenger's document number!" });
+        if (Passenger.ExpiryDate < DateTime.Now)
+            validationErrors.Add(new ValidationError { Description = "Expiration date of passenger's document is not valid!" });
+        if (String.IsNullOrWhiteSpace(Passenger.SeatPosition))
+            validationErrors.Add(new ValidationError { Description = "Please insert passenger's seat position!" });
+        if (Passenger.SeatNumber == null)
+            validationErrors.Add(new ValidationError { Description = "Please insert passenger's seat number!" });
+        if (Passenger.SeatPosition != "A" && Passenger.SeatPosition != "B" && Passenger.SeatPosition != "C")
+            validationErrors.Add(new ValidationError { Description = "Please insert correct seat position - possible are 'A', 'B' or 'C'!" });
+
+        return validationErrors;
+
+    }
+
+    private string GetConcatenatedValidationErrors(List<ValidationError> ValidationErrors)
+    {
+        StringBuilder message = new StringBuilder();
+        foreach (var error in ValidationErrors)
+        {
+            if (message.Length == 0)
+                message.Append(error.Description);
+            else
+                message.Append($"{Environment.NewLine} {error.Description}");
+
+        }
+        return message.ToString();
+    } }
+

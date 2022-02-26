@@ -1,0 +1,19 @@
+﻿<div class="passengerFields">
+    <label for="firstName">First name</label>
+    <InputText id="firstName" @bind-Value="@Passenger.FirstName" class="form-control"></InputText>
+
+    <label for="lastName">Last name</label>
+    <InputText id="lastName" @bind-Value="@Passenger.LastName" class="form-control"></InputText>
+
+    <label for="gender">Gender</label>
+    <InputText id="gender" @bind-Value="@Passenger.Gender" class="form-control"></InputText>
+
+    <label for="luggageNumber">Number of luggage</label>
+    <InputNumber id="luggageNumber" @bind-Value="@Passenger.LuggageNumber" class="form-control"></InputNumber>
+
+    <label for="luggageWeight">Weight of luggage</label>
+    <InputNumber id="luggageWeight" @bind-Value="@Passenger.LuggageWeight" class="form-control"></InputNumber>
+</div>
+
+@code { [Parameter]
+            public Passenger Passenger { get; set; } }

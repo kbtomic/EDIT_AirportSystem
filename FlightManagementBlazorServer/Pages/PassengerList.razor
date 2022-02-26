@@ -1,0 +1,114 @@
+﻿@page "/PassengerList/{FlightId}"
+@inject PassengerService _passengerService;
+@inject NavigationManager _navigationManager;
+
+
+<h3>Passengers</h3>
+@if (Passengers == null)
+{
+<div>Loading...</div> }
+            else
+            {
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Gender</th>
+            <th>Number of luggage</th>
+            <th>Weight of luggage</th>
+            <th>Name in document</th>
+            <th>Type of document</th>
+            <th>Number of document</th>
+            <th>Date of expiration</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var passenger in Passengers)
+        {
+            if (passenger.FlightId == int.Parse(FlightId))
+            {
+        <tr>
+            <td>@passenger.FirstName</td>
+            <td>@passenger.LastName</td>
+            <td>@passenger.Gender</td>
+            <td>@passenger.LuggageNumber</td>
+            <td>@passenger.LuggageWeight kg</td>
+            <td>@passenger.NameInDocument</td>
+            <td>@passenger.TypeOfDocument</td>
+            <td>@passenger.NumberOfDocument</td>
+            <td>@passenger.ExpiryDate</td>
+
+            <td>
+                <a href="/EditPassenger/@passenger.Id" class="btn btn-primary">
+                    <span class="oi oi-pencil"></span>
+                </a>
+                <button type="button" class="btn btn-danger" @onclick="() => DeletePassenger(passenger.Id)">
+                    <span class="oi oi-delete"></span>
+                </button>
+                @if (passenger.IsChecked == false)
+                {<a href="/CheckInPassenger/@passenger.Id" class="btn btn-primary">
+                        Check in
+                    </a>}
+            </td>
+        </tr>}
+        }
+
+    </tbody>
+</table>
+<span class="btn btn-secondary">Total luggage weight: @CalculateWeight() kg</span>}
+
+<ConfirmationDialog @ref="DeleteConfirmationDialog" ConfirmationChanged="@OnDeleteConfirmationSelected" Question="Delete passenger?"></ConfirmationDialog>
+
+@code { private List<Passenger> Passengers;
+    public ConfirmationDialog DeleteConfirmationDialog { get; set; }
+    public int SelectedPassengerId { get; set; }
+
+    [Parameter]
+    public string FlightId { get; set; }
+
+    public Flight Flight { get; set; }
+    [Parameter]
+    public int WeightSum { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Passengers = await _passengerService.GetPassengers();
+    }
+
+
+
+    private void OpenAddPassengerPage()
+    {
+        _navigationManager.NavigateTo("/AddPassenger/{FlightId}");
+    }
+
+    private async Task DeletePassenger(int passengerId)
+    {
+        SelectedPassengerId = passengerId;
+        DeleteConfirmationDialog.Show();
+    }
+
+    private async Task OnDeleteConfirmationSelected(bool isDeleteConfirmed)
+    {
+        if (isDeleteConfirmed)
+        {
+            await _passengerService.DeletePassenger(SelectedPassengerId);
+            Passengers = await _passengerService.GetPassengers();
+        }
+    }
+
+    private int CalculateWeight()
+    {
+
+        foreach (var passenger in Passengers)
+        {
+            if (passenger.FlightId == int.Parse(FlightId))
+            {
+                WeightSum = WeightSum + (int)passenger.LuggageWeight;
+            }
+        }
+        return WeightSum;
+    }
+}
+
