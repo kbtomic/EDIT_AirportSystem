@@ -45,6 +45,9 @@ namespace FlightManagementWebAPI.Repositories
                 passengerForUpdate.TypeOfDocument = passenger.TypeOfDocument;
                 passengerForUpdate.NumberOfDocument = passenger.NumberOfDocument;
                 passengerForUpdate.ExpiryDate = passenger.ExpiryDate;
+                passengerForUpdate.SeatPosition = passenger.SeatPosition;
+                passengerForUpdate.SeatNumber = passenger.SeatNumber;
+                passengerForUpdate.IsChecked = passenger.IsChecked;
 
                 _airportSystemContext.SaveChanges();
             }

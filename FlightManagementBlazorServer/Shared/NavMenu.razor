@@ -1,5 +1,8 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">FlightManagementBlazorServer</a>
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage BrowserStorage;
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="/FlightList">FlightManagementBlazorServer</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -7,9 +10,14 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
-        <li class="nav-item px-3">
+        @*<li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>*@
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="FlightList">
+                <span class="oi oi-location" aria-hidden="true"></span> Flights
             </NavLink>
         </li>
         <li class="nav-item px-3">
@@ -22,13 +30,31 @@
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Carriers
             </NavLink>
         </li>
+        @if(true)
+            {
+    <li class="nav-item px-3">
+        <NavLink class="nav-link" href="register">
+            <span class="oi oi-account-login" aria-hidden="true"></span> Add New User
+        </NavLink>
+    </li>
+            }
     </ul>
 </div>
 
 @code {
+    public User User { get; set; }
+    public bool IsAuthorized { get; set; } = false;
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    //public async Task OnInitializedAsync()
+    //{
+    //    var result = await BrowserStorage.GetAsync<string>("role");
+    //    if (result.Value.Equals("Admin"))
+    //        IsAuthorized = true;
+    //}
 
     private void ToggleNavMenu()
     {

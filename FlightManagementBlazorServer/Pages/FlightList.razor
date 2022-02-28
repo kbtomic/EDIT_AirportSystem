@@ -1,15 +1,23 @@
-﻿@page "/"
+﻿@page "/FlightList"
 @using FlightManagementBlazorServer.Services
 @inject FlightService _flightService;
 @inject NavigationManager _navigationManager;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage BrowserStorage;
+@inject ViewOptionService ViewOption
 
+<button class="btn btn-dark" @onclick="ViewOption.Toggle">Menu</button>
 
 <h3>Flights</h3>
-<button type="button" class="btn btn-success" @onclick="OpenAddFlightPage">
-    <span class="oi oi-plus"></span>
-    Add Flight
-</button>
-@if(Flights == null)
+@if (IsAuthorized)
+{
+    <button type="button" class="btn btn-success" @onclick="OpenAddFlightPage">
+        <span class="oi oi-plus"></span>
+        Add Flight
+    </button>
+}
+
+@if (Flights == null)
 {
     <div>Loading...</div>
 }
@@ -26,7 +34,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach(var flight in Flights)
+            @foreach (var flight in Flights)
             {
                 <tr>
                     <td>@flight.Number</td>
@@ -35,28 +43,39 @@ else
                     <td>@flight.Carrier?.Name</td>
                     <td>@flight.AirportTo</td>
                     <td>
-                        <a href="/EditFlight/@flight.Id" class="btn btn-primary">
-                            <span class="oi oi-pencil"></span>
-                        </a>
-                        <button type="button" class="btn btn-danger" @onclick="() => DeleteFlight(flight.Id)">
-                            <span class="oi oi-delete"></span>
-                        </button>
-                        <button type="button" class="btn btn-secondary" @onclick="() => ArchiveFlight(flight.Id)">
-                            <span class="oi oi-transfer"></span>
-                        </button>
+                        @if (IsAuthorized)
+                        {
+                            <a href="/EditFlight/@flight.Id" class="btn btn-primary">
+                                <span class="oi oi-pencil"></span>
+                            </a>
+
+                            <button type="button" class="btn btn-danger" @onclick="() => DeleteFlight(flight.Id)">
+                                <span class="oi oi-delete"></span>
+                            </button>
+
+                            <button type="button" class="btn btn-secondary" @onclick="() => ArchiveFlight(flight.Id)">
+                                <span class="oi oi-transfer"></span>
+                            </button>
+                        }
+
                         <a href="/PassengerList/@flight.Id" class="btn btn-warning">
                             <span class="glyphicon glyphicon-user"></span> All Passengers
                         </a>
+
                         <a href="/CheckInPassengerList/@flight.Id" class="btn btn-success">
                             <span class="glyphicon glyphicon-user"></span> Checked In Passengers
                         </a>
-                        <a href="/AddPassenger/@flight.Id" class="btn btn-info">
-                            <span class="glyphicon glyphicon-user"></span> Add Passenger
-                        </a>
+                        @if (IsAuthorized)
+                        {
+                            <a href="/AddPassenger/@flight.Id" class="btn btn-info">
+                                <span class="glyphicon glyphicon-user"></span> Add Passenger
+                            </a>
+                        }
+
                     </td>
                 </tr>
             }
-            
+
         </tbody>
     </table>
 
@@ -67,12 +86,27 @@ else
 
 @code {
     private List<Flight> Flights;
-    public ConfirmationDialog DeleteConfirmationDialog{ get; set; }
-    public ConfirmationDialog ArchiveConfirmationDialog{ get; set; }
-    public int SelectedFlightId{ get; set; }
+    public ConfirmationDialog DeleteConfirmationDialog { get; set; }
+    public ConfirmationDialog ArchiveConfirmationDialog { get; set; }
+    public int SelectedFlightId { get; set; }
+    public User User { get; set; }
+    public bool IsAuthorized { get; set; } = false;
     protected override async Task OnInitializedAsync()
     {
         Flights = await _flightService.GetFlights();
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var result = await BrowserStorage.GetAsync<string>("role");
+            if (result.Value.Equals("Admin"))
+                IsAuthorized = true;
+
+            StateHasChanged();
+        }
     }
 
     private void OpenAddFlightPage()
@@ -88,7 +122,7 @@ else
 
     private async Task OnDeleteConfirmationSelected(bool isDeleteConfirmed)
     {
-        if(isDeleteConfirmed)
+        if (isDeleteConfirmed)
         {
             await _flightService.DeleteFlight(SelectedFlightId);
             Flights = await _flightService.GetFlights();
@@ -97,7 +131,7 @@ else
 
     private async Task OnArchiveConfirmationSelected(bool isArchiveConfirmed)
     {
-        if(isArchiveConfirmed)
+        if (isArchiveConfirmed)
         {
             await _flightService.ArchiveFlight(SelectedFlightId);
             Flights = await _flightService.GetFlights();

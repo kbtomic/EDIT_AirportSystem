@@ -6,7 +6,7 @@
     <span class="oi oi-plus"></span>
     Add Carrier
 </button>
-@if(Carriers == null)
+@if (Carriers == null)
 {
     <p>Loading...</p>
 }
@@ -20,7 +20,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach(var carrier in Carriers)
+            @foreach (var carrier in Carriers)
             {
                 <tr>
                     <td>@carrier.Name</td>

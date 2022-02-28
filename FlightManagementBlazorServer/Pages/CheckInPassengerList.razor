@@ -2,41 +2,41 @@
 @inject PassengerService _passengerService;
 @inject NavigationManager _navigationManager;
 
-
 <h3>Passengers</h3>
 @if (Passengers == null)
 {
-<div>Loading...</div> }
+    <div>Loading...</div> }
 else
 {
-<table class="table table-responsive">
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Gender</th>
-            <th>Seat Number</th>
-            <th>Luggage weight</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var passenger in Passengers)
-        {
-            if (passenger.FlightId == int.Parse(FlightId) && passenger.IsChecked == true)
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Gender</th>
+                <th>Seat Number</th>
+                <th>Luggage weight</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var passenger in Passengers)
             {
-<tr>
-    <td>@passenger.FirstName</td>
-    <td>@passenger.LastName</td>
-    <td>@passenger.Gender</td>
-    <td>@passenger.SeatNumber@passenger.SeatPosition</td>
-    <td>@passenger.LuggageWeight kg</td>
+                if (passenger.FlightId == int.Parse(FlightId) && passenger.IsChecked == true)
+                {
+                    <tr>
+                        <td>@passenger.FirstName</td>
+                        <td>@passenger.LastName</td>
+                        <td>@passenger.Gender</td>
+                        <td>@passenger.SeatNumber@passenger.SeatPosition</td>
+                        <td>@passenger.LuggageWeight kg</td>
 
-</tr>}
-                }
+                    </tr>
+}
+            }
 
-    </tbody>
-</table>
-                <span class="btn btn-secondary">Total luggage weight: @CalculateWeight() kg</span>}
+        </tbody>
+    </table>
+    <span class="btn btn-secondary">Total luggage weight: @CalculateWeight() kg</span>}
 
 @code { private List<Passenger> Passengers;
     public ConfirmationDialog DeleteConfirmationDialog { get; set; }

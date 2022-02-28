@@ -1,0 +1,58 @@
+﻿@page "/"
+@using System.Text;
+@inject UserService _userService;
+@inject NavigationManager _navigationManager;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage BrowserStorage;
+<h3>Login</h3>
+
+<EditForm Model="@User" OnValidSubmit="@LogIn">
+    <div class="userFields">
+        <label for="userName">Username</label>
+        <InputText id="userName" @bind-Value="@User.Username" class="form-control"></InputText>
+
+        <label for="password">Password</label>
+        <InputText type="password" placeholder="Input Password" id="password" @bind-Value="@User.Password" class="form-control"></InputText>
+
+    </div>
+    <button type="submit" class="btn btn-success">
+        <span class="oi oi-pencil"></span>
+        Login
+    </button>
+</EditForm>
+
+<NotificationDialog @ref="NotificationDialog" Description="Invalid Login Attempt!"></NotificationDialog>
+
+@code {
+    public User User { get; set; }
+    public NotificationDialog NotificationDialog { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = new User();
+    }
+
+    private async Task LogIn()
+    {
+        var users = await _userService.GetUsers();
+        foreach (var u in users)
+        {
+            if (User.Username.Equals(u.Username))
+            {
+                if (User.Password.Equals(u.Password))
+                {
+                    _navigationManager.NavigateTo("/FlightList");
+                    await BrowserStorage.SetAsync("role", u.Role);
+                }
+                else
+                {
+                    NotificationDialog.Show();
+                }
+            }
+                else
+                {
+                    NotificationDialog.Show();
+                }
+        }
+    }
+}

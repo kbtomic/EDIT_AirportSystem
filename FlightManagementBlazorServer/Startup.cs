@@ -34,6 +34,8 @@ namespace FlightManagementBlazorServer
             services.AddScoped<FlightService>();
             services.AddScoped<CarrierService>();
             services.AddScoped<PassengerService>();
+            services.AddScoped<UserService>();
+            services.AddSingleton<ViewOptionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

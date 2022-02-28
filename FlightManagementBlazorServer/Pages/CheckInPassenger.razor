@@ -71,14 +71,14 @@ else
         {
             Passenger.IsChecked = IsChecked;
             if (Passenger.IsChecked == true)
-            { await _passengerService.UpdatePassengerCheckInAndSeat(Passenger); }
+            { await _passengerService.UpdatePassenger(Passenger); }
             Close();
         }
     }
 
     private void Close()
     {
-        _navigationManager.NavigateTo("/");
+        _navigationManager.NavigateTo("/FlightList");
     }
 
     private List<ValidationError> ValidatePassenger()
