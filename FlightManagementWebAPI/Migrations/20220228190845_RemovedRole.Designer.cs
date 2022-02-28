@@ -4,14 +4,16 @@ using FlightManagementWebAPI.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FlightManagementWebAPI.Migrations
 {
     [DbContext(typeof(AirportSystemContext))]
-    partial class AirportSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20220228190845_RemovedRole")]
+    partial class RemovedRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

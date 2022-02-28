@@ -1,5 +1,7 @@
-﻿using DomainModel.Models;
+﻿using DomainModel.Authentication;
+using DomainModel.Models;
 using FlightManagementWebAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
