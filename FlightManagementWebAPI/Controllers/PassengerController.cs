@@ -32,6 +32,36 @@ namespace FlightManagementWebAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("/GOF/{flightId}")]
+        public IActionResult GetPassengersOnFlight(int flightId)
+        {
+            try
+            {
+                var passengers = _passengerRepository.GetPassengersOnFlight(flightId);
+                return Ok(passengers);
+            }
+            catch (System.Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        [Route("/GCOF/{flightId}")]
+        public IActionResult GetCheckedPassengersOnFlight(int flightId)
+        {
+            try
+            {
+                var passengers = _passengerRepository.GetCheckedPassengersOnFlight(flightId);
+                return Ok(passengers);
+            }
+            catch (System.Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
         [HttpPost]
         public IActionResult AddPassenger([FromBody] Passenger passenger/*int flightId*/)
         {

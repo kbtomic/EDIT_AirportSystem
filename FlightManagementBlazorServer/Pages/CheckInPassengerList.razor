@@ -21,8 +21,6 @@ else
         <tbody>
             @foreach (var passenger in Passengers)
             {
-                if (passenger.FlightId == int.Parse(FlightId) && passenger.IsChecked == true)
-                {
                     <tr>
                         <td>@passenger.FirstName</td>
                         <td>@passenger.LastName</td>
@@ -31,7 +29,6 @@ else
                         <td>@passenger.LuggageWeight kg</td>
 
                     </tr>
-}
             }
 
         </tbody>
@@ -52,17 +49,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Passengers = await _passengerService.GetPassengers();
+        Passengers = await _passengerService.GetCheckedPassengersOnFlight(int.Parse(FlightId));
     }
     private int CalculateWeight()
     {
 
         foreach (var passenger in Passengers)
         {
-            if (passenger.FlightId == int.Parse(FlightId) && passenger.IsChecked == true)
-            {
                 WeightSum = WeightSum + (int)passenger.LuggageWeight;
-            }
         }
         return WeightSum;
     }}

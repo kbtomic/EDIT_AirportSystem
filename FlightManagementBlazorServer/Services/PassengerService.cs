@@ -24,6 +24,16 @@ namespace FlightManagementBlazorServer.Services
             return await _httpClient.GetFromJsonAsync<List<Passenger>>(BaseApiUrl);
         }
 
+        public async Task<List<Passenger>> GetPassengersOnFlight(int flightId)
+        {
+            return await _httpClient.GetFromJsonAsync<List<Passenger>>($"https://localhost:44334/GOF/{flightId}");
+        }
+
+        public async Task<List<Passenger>> GetCheckedPassengersOnFlight(int flightId)
+        {
+            return await _httpClient.GetFromJsonAsync<List<Passenger>>($"https://localhost:44334/GCOF/{flightId}");
+        }
+
         public async Task AddPassengerAsync(Passenger passenger, int flightId)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, BaseApiUrl);

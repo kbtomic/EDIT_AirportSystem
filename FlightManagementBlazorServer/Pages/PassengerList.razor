@@ -25,8 +25,8 @@ else
         <tbody>
             @foreach (var passenger in Passengers)
             {
-                if (passenger.FlightId == int.Parse(FlightId))
-                {
+                //if (passenger.FlightId == int.Parse(FlightId))
+                //{
                     <tr>
                         <td>@passenger.FirstName</td>
                         <td>@passenger.LastName</td>
@@ -51,7 +51,7 @@ else
                                 </a>}
                         </td>
                     </tr>
-}
+@*}*@
             }
 
         </tbody>
@@ -73,13 +73,10 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Passengers = await _passengerService.GetPassengers();
+        Passengers = await _passengerService.GetPassengersOnFlight(int.Parse(FlightId));
         foreach (var passenger in Passengers)
         {
-            if (passenger.FlightId == int.Parse(FlightId))
-            {
                 WeightSum = WeightSum + (int)passenger.LuggageWeight;
-            }
         }
     }
 
@@ -104,18 +101,5 @@ else
             Passengers = await _passengerService.GetPassengers();
         }
     }
-
-    //private int CalculateWeight()
-    //{
-
-    //    foreach (var passenger in Passengers)
-    //    {
-    //        if (passenger.FlightId == int.Parse(FlightId))
-    //        {
-    //            WeightSum = WeightSum + (int)passenger.LuggageWeight;
-    //        }
-    //    }
-    //    return WeightSum;
-    //}
 }
 

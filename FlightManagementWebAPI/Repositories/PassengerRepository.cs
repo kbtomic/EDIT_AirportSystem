@@ -19,6 +19,18 @@ namespace FlightManagementWebAPI.Repositories
         {
             return _airportSystemContext.Passengers.ToList();
         }
+
+        public List<Passenger> GetPassengersOnFlight(int flightId)
+        {
+            var passengers = _airportSystemContext.Passengers.ToList();
+            return passengers.FindAll(passenger => passenger.FlightId == flightId).ToList();
+        }
+
+        public List<Passenger> GetCheckedPassengersOnFlight(int flightId)
+        {
+            var passengers = _airportSystemContext.Passengers.ToList();
+            return passengers.FindAll(passenger => passenger.FlightId == flightId && passenger.IsChecked == true).ToList();
+        }
         public void InsertPassenger(Passenger passenger /*int flightId*/)
         {
             //passenger.FlightId = flightId;
